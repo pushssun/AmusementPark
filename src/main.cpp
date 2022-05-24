@@ -3,8 +3,27 @@
 #include<GL/glut.h>
 #include<stdio.h>
 #include<math.h>
+#include<time.h>
+#include <GL/GL.h>
+#include <string.h>
+
+#define MAX_PARTICLES 1000
+#define WCX		640
+#define WCY		480
+#define RAIN	0
+#define SNOW	1
+#define	NONE	2
 
 
+float slowdown = 2.0;
+float velocity = 0.0;
+float zoom = -5.0;
+float pan = 0.0;
+float tilt = 0.0;
+float hailsize = 0.1;
+
+int loop;
+int fall = NONE;
 
 void display();
 void draw_gwheel();
@@ -14,7 +33,7 @@ void place_camera(int);
 void set_material(int material);
 
 const int SKY_FRONT = 0, SKY_RIGHT = 1, SKY_LEFT = 2, SKY_BACK = 3, SKY_UP = 4, SKY_DOWN = 5, COLUMBUS = 1, COLUMBUS_STAND = 2, GWHEEL_RING = 3, GWHEEL_TROLLEY = 4, GWHEEL_TOP = 5, ROLLER_BODY = 6, ROLLER_FRAME = 7;
-int ni = 0, prevx = 0, rcam = 1, bezno, camw = 0, roll = 0, background = 0, cswing = 0, gw = 0, columbus_color = 0, columbus_stand_color = 0, gwheel_ring_color = 0, gwheel_trolley_color = 0, roller_body_color = 0;
+int ni = 0, prevx = 0, rcam = 1, bezno, camw = 0, roll = 0, background = 0, cswing = 0, gw = 0, columbus_color = 0, columbus_stand_color = 0, gwheel_ring_color = 0, gwheel_trolley_color = 0, roller_body_color = 0, snow = 0, rain = 0;
 GLint skybox[6], grass, help = 0, x_r = 0, y_r = 0, z_r = 0;
 GLfloat viewer[3] = { 1.0f, 0.0f, 0.0f }, camera[3] = { 0.0f, 0.0, 0.0 };
 GLdouble curr = 0, prev = 0, gw_spin = 0.0, angle = 0.0, c_angle = 90.0, gw_width = 8.0, gw_radius = 45.0, gw_x = -180.0, gw_y = 50.0, gw_z = 220.0, co_x = 180.0, co_y = 0.0, co_z = 80.0, lx = 50.0, ly = 50.0, lz = 50.0, bez_prog = 0.0, roller_speed = 0.0150, gy = 0, movcord[3] = { -150,-10,200 };
@@ -35,6 +54,135 @@ void draw_columbus();
 void moveToBezier(double);
 double bezier(double, double, double, double, double);
 void draw_cyl(float x1, float y1, float z1, float x2, float y2, float z2, float radius, int subdivisions);
+
+typedef struct {
+	// Life
+	bool alive;	// is the particle alive?
+	float life;	// particle lifespan
+	float fade; // decay
+	// color
+	float red;
+	float green;
+	float blue;
+	// Position/direction
+	float xpos;
+	float ypos;
+	float zpos;
+	// Velocity/Direction, only goes down in y dir
+	float vel;
+	// Gravity
+	float gravity;
+}particles;
+
+// Paticle System
+particles par_sys[MAX_PARTICLES];
+
+
+void initParticles(int i) {
+	par_sys[i].alive = true;
+	par_sys[i].life = 1.0;
+	par_sys[i].fade = float(rand() % 100) / 1000.0f + 0.003f;
+
+	par_sys[i].xpos = (float)(rand() % 21) - 10;
+	par_sys[i].ypos = 10.0;
+	par_sys[i].zpos = (float)(rand() % 21) - 10;
+
+	par_sys[i].red = 0.5;
+	par_sys[i].green = 0.5;
+	par_sys[i].blue = 1.0;
+
+	par_sys[i].vel = velocity;
+	par_sys[i].gravity = -0.8;//-0.8;
+
+}
+
+void init() {
+	int x, z;
+
+	glShadeModel(GL_SMOOTH);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearDepth(1.0);
+	glEnable(GL_DEPTH_TEST);
+
+
+	// Initialize particles
+	for (loop = 0; loop < MAX_PARTICLES; loop++) {
+		initParticles(loop);
+	}
+}
+
+// For Rain
+void drawRain() {
+	float x, y, z;
+	for (loop = 0; loop < MAX_PARTICLES; loop = loop + 2) {
+		if (par_sys[loop].alive == true) {
+			x = par_sys[loop].xpos;
+			y = par_sys[loop].ypos;
+			z = par_sys[loop].zpos + zoom;
+
+			// Draw particles
+			glColor3f(0.5, 0.5, 1.0);
+			glBegin(GL_LINES);
+			glVertex3f(x, y, z);
+			glVertex3f(x, y + 0.5, z);
+			glEnd();
+
+			// Update values
+			//Move
+			// Adjust slowdown for speed!
+			par_sys[loop].ypos += par_sys[loop].vel / (slowdown * 1000);
+			par_sys[loop].vel += par_sys[loop].gravity;
+			// Decay
+			par_sys[loop].life -= par_sys[loop].fade;
+
+			if (par_sys[loop].ypos <= -10) {
+				par_sys[loop].life = -1.0;
+			}
+			//Revive 
+			if (par_sys[loop].life < 0.0) {
+				initParticles(loop);
+			}
+		}
+	}
+}
+
+// For Snow
+void drawSnow() {
+	float x, y, z;
+	for (loop = 0; loop < MAX_PARTICLES; loop = loop + 2) {
+		if (par_sys[loop].alive == true) {
+			x = par_sys[loop].xpos;
+			y = par_sys[loop].ypos;
+			z = par_sys[loop].zpos + zoom;
+
+			// Draw particles
+			glColor3f(1.0, 1.0, 1.0);
+			glPushMatrix();
+			glTranslatef(x, y, z);
+			glutSolidSphere(0.02, 10, 10);
+			glPopMatrix();
+
+			// Update values
+			//Move
+			par_sys[loop].ypos += par_sys[loop].vel / (slowdown * 1000);
+			par_sys[loop].vel += par_sys[loop].gravity;
+			// Decay
+			par_sys[loop].life -= par_sys[loop].fade;
+
+			if (par_sys[loop].ypos <= -10) {
+				int zi = z - zoom + 10;
+				int xi = x + 10;
+
+				par_sys[loop].life = -1.0;
+			}
+
+			//Revive 
+			if (par_sys[loop].life < 0.0) {
+				initParticles(loop);
+			}
+		}
+	}
+}
 
 void Firework(int Tail) {
 	glPushMatrix();
@@ -532,6 +680,15 @@ void idle()
 		}
 	}
 
+	if (snow) fall = SNOW;
+
+
+	if (rain) fall = RAIN;
+
+	if (snow == 0 && rain == 0) fall = NONE;
+
+	glutPostRedisplay();
+
 	display();
 
 }
@@ -694,14 +851,16 @@ void display() {
 		drawText("* b : Change background", 0, 0.25, 0.82);
 		drawText("* c : Start/stop Columbus Ship", 0, 0.20, 0.82);
 		drawText("* f : Display Fireworks", 0, 0.15, 0.82);
-		drawText("* h : Show/hide help menu", 0, 0.1, 0.82);
-		drawText("* g : Start/stop Giant Wheel", 0, 0.05, 0.82);
-		drawText("* r : Start/stop Roller Coaster", 0, 0.0, 0.82);
-		drawText("* w : Change camera position", 0, -0.05, 0.82);
-		drawText("* + : Move up", 0, -0.10, 0.82);
-		drawText("* - : Move down", 0, -0.15, 0.82);
-		drawText("* Drag mouse on the window in left or right direction: Look around 360 degrees", 0, -0.20, 0.82);
-		drawText("Above actions can also be performed from the right-click context menu", 0, -0.25, 0.82);
+		drawText("* s : Snowing", 0, 0.1, 0.82);
+		drawText("* t : Raining", 0, 0.05, 0.82);
+		drawText("* h : Show/hide help menu", 0, 0.0, 0.82);
+		drawText("* g : Start/stop Giant Wheel", 0, -0.05, 0.82);
+		drawText("* r : Start/stop Roller Coaster", 0, -0.10, 0.82);
+		drawText("* w : Change camera position", 0, -0.15, 0.82);
+		drawText("* + : Move up", 0, -0.20, 0.82);
+		drawText("* - : Move down", 0, -0.25, 0.82);
+		drawText("* Drag mouse on the window in left or right direction: Look around 360 degrees", 0, -0.30, 0.82);
+		drawText("Above actions can also be performed from the right-click context menu", 0, -0.35, 0.82);
 		drawText("Developed by Karthik A (1BI10CS040)", 0, -0.45, 0.82);
 		glEnable(GL_LIGHTING);
 		glPopMatrix();
@@ -754,6 +913,27 @@ void display() {
 		glPushMatrix();
 		PlayFireWork();
 		glPopMatrix();
+
+		glMatrixMode(GL_MODELVIEW);
+
+		glLoadIdentity();
+
+
+		glRotatef(pan, 0.0, 1.0, 0.0);
+		glRotatef(tilt, 1.0, 0.0, 0.0);
+
+
+		glBegin(GL_QUADS);
+
+		glEnd();
+		// Which Particles
+		if (fall == RAIN) {
+			drawRain();
+		}
+		else if (fall == SNOW) {
+			drawSnow();
+		}
+
 	}
 	glutSwapBuffers();
 
@@ -954,6 +1134,15 @@ void kb(unsigned char key, int x, int y)
 		}
 		PlayFireWork();
 	}
+	if (key == 's') {
+		snow == 1 ? snow = 0 : snow = 1;
+		if (rain == 1) rain = 0;
+	}
+
+	if (key == 't') {
+		rain == 1 ? rain = 0 : rain = 1;
+		if (snow == 1) snow = 0;
+	}
 	display();
 }
 
@@ -1029,6 +1218,14 @@ void menu(int action)
 	}
 	if (action == 1) help == 1 ? help = 0 : help = 1;
 	if (action == 2)	exit(0);
+	if (action == 3) {
+		snow == 1 ? snow = 0 : snow = 1;
+		if (rain == 1) rain = 0;
+	}
+	if (action == 4) {
+		rain == 1 ? rain = 0 : rain = 1;
+		if (snow == 1) snow = 0;
+	}
 }
 
 void handle_columbus_body(int action)
@@ -1110,6 +1307,8 @@ void addMenu()
 	glutAddSubMenu("Giant Wheel", submenu2);
 	glutAddSubMenu("Columbus ship", submenu3);
 	glutAddSubMenu("Roller Coaster", submenu4);
+	glutAddMenuEntry("Snowing", 3);
+	glutAddMenuEntry("Raining", 4);
 	glutAddMenuEntry("Change Background", 0);
 	glutAddMenuEntry("Show/hide Help", 1);
 	glutAddMenuEntry("Quit", 2);
@@ -1126,6 +1325,7 @@ int main(int argc, char** argv)
 	glutCreateWindow("Amusement Park");
 	initLights();
 	initSky();
+	init();
 	glutDisplayFunc(display);
 	glutReshapeFunc(displayReshape);
 	glutKeyboardFunc(kb);
