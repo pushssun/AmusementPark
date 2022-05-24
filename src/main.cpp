@@ -33,7 +33,7 @@ void place_camera(int);
 void set_material(int material);
 
 const int SKY_FRONT = 0, SKY_RIGHT = 1, SKY_LEFT = 2, SKY_BACK = 3, SKY_UP = 4, SKY_DOWN = 5, COLUMBUS = 1, COLUMBUS_STAND = 2, GWHEEL_RING = 3, GWHEEL_TROLLEY = 4, GWHEEL_TOP = 5, ROLLER_BODY = 6, ROLLER_FRAME = 7;
-int ni = 0, prevx = 0, rcam = 1, bezno, camw = 0, roll = 0, background = 0, cswing = 0, gw = 0, columbus_color = 0, columbus_stand_color = 0, gwheel_ring_color = 0, gwheel_trolley_color = 0, roller_body_color = 0, snow = 0, rain = 0;
+int ni = 0, prevx = 0, rcam = 1, bezno, camw = 0, roll = 0, background = 0, cswing = 0, gw = 0, columbus_color = 0, columbus_stand_color = 0, gwheel_ring_color = 0, gwheel_trolley_color = 0, roller_body_color = 0, snow = 0, rain = 0, firework = 0;
 GLint skybox[6], grass, help = 0, x_r = 0, y_r = 0, z_r = 0;
 GLfloat viewer[3] = { 1.0f, 0.0f, 0.0f }, camera[3] = { 0.0f, 0.0, 0.0 };
 GLdouble curr = 0, prev = 0, gw_spin = 0.0, angle = 0.0, c_angle = 90.0, gw_width = 8.0, gw_radius = 45.0, gw_x = -180.0, gw_y = 50.0, gw_z = 220.0, co_x = 180.0, co_y = 0.0, co_z = 80.0, lx = 50.0, ly = 50.0, lz = 50.0, bez_prog = 0.0, roller_speed = 0.0150, gy = 0, movcord[3] = { -150,-10,200 };
@@ -42,8 +42,8 @@ double bez[][3] = {
 };
 
 //불꽃놀이
-float FireWorkPosition[10][3] = { 0 };
-float FireWorkColor[10][4] = { 0 };
+float FireWorkPosition[6][3] = { 0 };
+float FireWorkColor[6][4] = { 0 };
 int FireworkTail = 0;
 int FireworkProgress = 0; //불꽃놀이 진행상황
 int FireworkTime = 0;
@@ -233,13 +233,25 @@ void MakeFireWork() {
 	glPopMatrix();
 }
 
+void drawFirework() {
+	FireworkTime = 1;
+	for (int i = 0; i < 6; i++) {
+		FireWorkPosition[i][0] = (float)((rand() % 500) - 300);
+		FireWorkPosition[i][1] = (float)((rand() % 600) - 1000);
+		FireWorkPosition[i][2] = (float)(((rand() % 30) + 15.0) / 10.0);
+		FireWorkColor[i][0] = (float)(rand() % 256);
+		FireWorkColor[i][1] = (float)(rand() % 256);
+		FireWorkColor[i][2] = (float)(rand() % 256);
+	}
+}
+
 void PlayFireWork() {
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 6; i++) {
 		glPushMatrix();
-		glTranslatef(FireWorkPosition[i][0], 100.0, FireWorkPosition[i][1]);
-		glColor3f((float)FireWorkColor[i][0] / 255.0, (float)FireWorkColor[i][1] / 255.0, (float)FireWorkColor[i][2] / 255.0);
-		glScalef(FireWorkPosition[i][2], FireWorkPosition[i][2], FireWorkPosition[i][2]);
-		MakeFireWork();
+			glTranslatef(FireWorkPosition[i][0], 200.0, FireWorkPosition[i][1]);
+			glColor3f((float)FireWorkColor[i][0] / 255.0, (float)FireWorkColor[i][1] / 255.0, (float)FireWorkColor[i][2] / 255.0);
+			glScalef(FireWorkPosition[i][2], FireWorkPosition[i][2], FireWorkPosition[i][2]);
+			MakeFireWork();
 		glPopMatrix();
 	}
 }
@@ -253,7 +265,6 @@ void FireworkPlay(int value) {
 		}
 		if (FireworkProgress == 50) {
 			FireworkProgress = 0;
-			FireworkTime = 0;
 		}
 	}
 	glutTimerFunc(10, FireworkPlay, 1);
@@ -629,11 +640,6 @@ void draw_wagon() {
 
 }
 
-
-
-
-
-
 void idle()
 {
 	double bez_offset = 0.000;
@@ -681,7 +687,6 @@ void idle()
 	}
 
 	if (snow) fall = SNOW;
-
 
 	if (rain) fall = RAIN;
 
@@ -904,16 +909,11 @@ void display() {
 		draw_columbus();
 		glPopMatrix();
 		glPushMatrix();
-
 		glTranslatef(gw_x, gw_y, -gw_z);
 		glRotatef(gw_spin, 0.0, 0.0, 1.0);
 		draw_gwheel();
 		glPopMatrix();
-
-		glPushMatrix();
-		PlayFireWork();
-		glPopMatrix();
-
+	
 		glMatrixMode(GL_MODELVIEW);
 
 		glLoadIdentity();
@@ -933,7 +933,9 @@ void display() {
 		else if (fall == SNOW) {
 			drawSnow();
 		}
-
+		if (firework == 1) {
+			PlayFireWork();
+		}
 	}
 	glutSwapBuffers();
 
@@ -1123,16 +1125,8 @@ void kb(unsigned char key, int x, int y)
 		//viewer[1]=viewer[2]=camera[0]=camera[1]=camera[2]=x_r=0.0; //시점 변경
 	}
 	if (key == 'f') {
-		FireworkTime = 1;
-		for (int i = 0; i < 10; i++) {
-			FireWorkPosition[i][0] = (float)((rand() % 500) - 100);
-			FireWorkPosition[i][1] = (float)((rand() % 600) - 400);
-			FireWorkPosition[i][2] = (float)(((rand() % 25) + 5.0) / 10.0);
-			FireWorkColor[i][0] = (float)(rand() % 256);
-			FireWorkColor[i][1] = (float)(rand() % 256);
-			FireWorkColor[i][2] = (float)(rand() % 256);
-		}
-		PlayFireWork();
+		drawFirework();
+		firework == 1 ? firework=0 : firework = 1;
 	}
 	if (key == 's') {
 		snow == 1 ? snow = 0 : snow = 1;
@@ -1209,7 +1203,6 @@ void handle_roller(int action)
 	}
 }
 
-
 void menu(int action)
 {
 	if (action == 0) {
@@ -1219,10 +1212,17 @@ void menu(int action)
 	if (action == 1) help == 1 ? help = 0 : help = 1;
 	if (action == 2)	exit(0);
 	if (action == 3) {
+		drawFirework();
+		firework == 1 ? firework = 0 : firework = 1;
+	}
+}
+
+void handle_effect(int action) {
+	if (action == 0) {
 		snow == 1 ? snow = 0 : snow = 1;
 		if (rain == 1) rain = 0;
 	}
-	if (action == 4) {
+	if (action == 1) {
 		rain == 1 ? rain = 0 : rain = 1;
 		if (snow == 1) snow = 0;
 	}
@@ -1255,7 +1255,7 @@ void handle_roller_color(int action)
 
 void addMenu()
 {
-	int submenu1, submenu2, submenu21, submenu22, submenu3, submenu31, submenu32, submenu4, submenu41;
+	int submenu1, submenu2, submenu21, submenu22, submenu3, submenu31, submenu32, submenu4, submenu41, submenu5;
 	submenu1 = glutCreateMenu(place_camera);
 	glutAddMenuEntry("Free Movement", 0);
 	glutAddMenuEntry("Inside Giant Wheel", 1);
@@ -1302,14 +1302,17 @@ void addMenu()
 	submenu4 = glutCreateMenu(handle_roller);
 	glutAddMenuEntry("Stop/Start Roller Coaster", 0);
 	glutAddSubMenu("Roller Coaster colour", submenu41);
-	glutCreateMenu(menu);
+	submenu5 = glutCreateMenu(handle_effect);
+	glutAddMenuEntry("Snowing", 0);
+	glutAddMenuEntry("Raining", 1);
+	glutCreateMenu(menu);	
 	glutAddSubMenu("Camera Position", submenu1);
 	glutAddSubMenu("Giant Wheel", submenu2);
 	glutAddSubMenu("Columbus ship", submenu3);
 	glutAddSubMenu("Roller Coaster", submenu4);
-	glutAddMenuEntry("Snowing", 3);
-	glutAddMenuEntry("Raining", 4);
 	glutAddMenuEntry("Change Background", 0);
+	glutAddSubMenu("Change Weather", submenu5);
+	glutAddMenuEntry("Display Firework", 3);
 	glutAddMenuEntry("Show/hide Help", 1);
 	glutAddMenuEntry("Quit", 2);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
