@@ -184,6 +184,17 @@ void drawSnow() {
 	}
 }
 
+void drawFirework() {
+	for (int i = 0; i < 6; i++) {
+		FireWorkPosition[i][0] = (float)((rand() % 500) - 300);
+		FireWorkPosition[i][1] = (float)((rand() % 600) - 1000);
+		FireWorkPosition[i][2] = (float)(((rand() % 30) + 15.0) / 10.0);
+		FireWorkColor[i][0] = (float)(rand() % 256);
+		FireWorkColor[i][1] = (float)(rand() % 256);
+		FireWorkColor[i][2] = (float)(rand() % 256);
+	}
+}
+
 void Firework(int Tail) {
 	glPushMatrix();
 	glPushMatrix();//몸통
@@ -233,25 +244,13 @@ void MakeFireWork() {
 	glPopMatrix();
 }
 
-void drawFirework() {
-	FireworkTime = 1;
-	for (int i = 0; i < 6; i++) {
-		FireWorkPosition[i][0] = (float)((rand() % 500) - 300);
-		FireWorkPosition[i][1] = (float)((rand() % 600) - 1000);
-		FireWorkPosition[i][2] = (float)(((rand() % 30) + 15.0) / 10.0);
-		FireWorkColor[i][0] = (float)(rand() % 256);
-		FireWorkColor[i][1] = (float)(rand() % 256);
-		FireWorkColor[i][2] = (float)(rand() % 256);
-	}
-}
-
 void PlayFireWork() {
 	for (int i = 0; i < 6; i++) {
 		glPushMatrix();
-			glTranslatef(FireWorkPosition[i][0], 200.0, FireWorkPosition[i][1]);
-			glColor3f((float)FireWorkColor[i][0] / 255.0, (float)FireWorkColor[i][1] / 255.0, (float)FireWorkColor[i][2] / 255.0);
-			glScalef(FireWorkPosition[i][2], FireWorkPosition[i][2], FireWorkPosition[i][2]);
-			MakeFireWork();
+		glTranslatef(FireWorkPosition[i][0], 200.0, FireWorkPosition[i][1]);
+		glColor3f((float)FireWorkColor[i][0] / 255.0, (float)FireWorkColor[i][1] / 255.0, (float)FireWorkColor[i][2] / 255.0);
+		glScalef(FireWorkPosition[i][2], FireWorkPosition[i][2], FireWorkPosition[i][2]);
+		MakeFireWork();
 		glPopMatrix();
 	}
 }
@@ -264,6 +263,7 @@ void FireworkPlay(int value) {
 			FireworkTail = 0;
 		}
 		if (FireworkProgress == 50) {
+			drawFirework();
 			FireworkProgress = 0;
 		}
 	}
@@ -933,6 +933,7 @@ void display() {
 		else if (fall == SNOW) {
 			drawSnow();
 		}
+		
 		if (firework == 1) {
 			PlayFireWork();
 		}
@@ -1125,6 +1126,7 @@ void kb(unsigned char key, int x, int y)
 		//viewer[1]=viewer[2]=camera[0]=camera[1]=camera[2]=x_r=0.0; //시점 변경
 	}
 	if (key == 'f') {
+		FireworkTime = 1;
 		drawFirework();
 		firework == 1 ? firework=0 : firework = 1;
 	}
@@ -1212,6 +1214,7 @@ void menu(int action)
 	if (action == 1) help == 1 ? help = 0 : help = 1;
 	if (action == 2)	exit(0);
 	if (action == 3) {
+		FireworkTime = 1;
 		drawFirework();
 		firework == 1 ? firework = 0 : firework = 1;
 	}
