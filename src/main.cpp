@@ -6,6 +6,16 @@
 #include<time.h>
 #include <GL/GL.h>
 #include <string.h>
+#include<mmsystem.h>
+#include<Windows.h>
+
+using namespace std;
+
+
+#pragma comment(lib,"winmm.lib")
+#define M_Run "..\\BGM\\parkmusic.wav"
+#define GL_PI 3.1415f
+#define GL_Root 1.414f
 
 #define MAX_PARTICLES 1000
 #define WCX		640
@@ -13,6 +23,38 @@
 #define RAIN	0
 #define SNOW	1
 #define	NONE	2
+
+GLfloat fAspect;
+GLfloat WidthFactor;
+GLfloat HeightFactor;
+
+float xRot = 15.0;
+float yRot = 225.0;
+float zRot = 0.0;
+
+float ClickX = 0.0;
+float ClickY = 0.0;
+
+float MouseRotX = 0.0;
+float MouseRotY = 0.0;
+float ViewAngle = 0.0;
+float ViewUpAngle = 0.0;
+float ViewMoveX = 0.0;
+float ViewMoveZ = -16.0;
+float HeroMotion;
+float HeroMotionAdd = 10.0;
+float HeroRot = 0.0;
+float HeroMoveX = 17.0;
+float HeroMoveZ = -17.0;
+
+int mousecheck = 0;
+int View = 0;	//시점  0=3인칭, 1= 주인공 1인칭
+int RolPosition[3] = { 0,485,483 };
+int RolSpeed = 1;
+int HeroMoving = 0;
+int HeroMoveCheck = 0;
+int OnRide = 0;	// 0 = 안탐, 1 = 바이킹, 2 = 관람차, 3 = 자이드롭, 4 = 롤러코스터  - 시점변환시 관람차 써도될듯, 시점 다시 돌아올때 위치 초기화 하고 ride 0으로 만들기
+
 
 
 float slowdown = 2.0;
@@ -31,6 +73,7 @@ void draw_wagon();
 void draw_seat();
 void place_camera(int);
 void set_material(int material);
+
 
 const int SKY_FRONT = 0, SKY_RIGHT = 1, SKY_LEFT = 2, SKY_BACK = 3, SKY_UP = 4, SKY_DOWN = 5, COLUMBUS = 1, COLUMBUS_STAND = 2, GWHEEL_RING = 3, GWHEEL_TROLLEY = 4, GWHEEL_TOP = 5, ROLLER_BODY = 6, ROLLER_FRAME = 7;
 int ni = 0, prevx = 0, rcam = 1, bezno, camw = 0, roll = 0, background = 0, cswing = 0, gw = 0, columbus_color = 0, columbus_stand_color = 0, gwheel_ring_color = 0, gwheel_trolley_color = 0, roller_body_color = 0, snow = 0, rain = 0, firework = 0;
@@ -269,6 +312,110 @@ void FireworkPlay(int value) {
 	}
 	glutTimerFunc(10, FireworkPlay, 1);
 	glutPostRedisplay();
+}
+
+void Hero() {	//주인공 그리기
+
+	/*
+	glPushMatrix();
+	if (OnRide == 0) {
+		glTranslatef(HeroMoveX, 26.6, HeroMoveZ - 260);
+		glRotatef(HeroRot, 0.0, 0.0, 0.0);
+	}
+	*/
+	glPushMatrix();	//머리
+	glTranslatef(-10.0, -38.0, 0.0);
+	glColor3f((float)255 / 255.0, (float)222 / 255.0, (float)191 / 255.0);
+	glutSolidCube(10.0);	//머리 크기
+	glPushMatrix();	//왼쪽 눈
+	glTranslatef(0.2, 1.0, -0.4);
+	glColor3f(0.0, 0.0, 0.0);
+	glutSolidCube(0.25);
+	glTranslatef(0.0, 0.0, -0.1);
+	glColor3f(1.0, 1.0, 1.0);
+	glutSolidCube(1.5);
+	glPopMatrix();
+	glPushMatrix();	//오른쪽 눈
+	glTranslatef(-0.2, 1.0, -0.4);
+	glColor3f(0.0, 0.0, 0.0);
+	glutSolidCube(0.25);
+	glTranslatef(0.0, 0.0, -0.1);
+	glColor3f(1.0, 1.0, 1.0);
+	glutSolidCube(1.5);
+	glPopMatrix();
+	glPopMatrix();
+
+	glPushMatrix();//몸통
+	glTranslatef(-10.0, -50.0, -0.1);
+	glScalef(1.4, 2.0, 1.0);
+	glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
+	glutSolidCube(6.0);
+	glColor3f(0.0, 0.0, 0.0);
+	glutWireCube(6.0);
+	glPopMatrix();
+
+	glPushMatrix();	//왼팔
+	glTranslatef(-4.0, -30.0, 0.0);
+	/*
+	if (OnRide == 0) {
+		glRotatef(HeroMotion, 1.0, 0.0, 0.0);
+	}
+	*/
+	glTranslatef(0.0, -18.0, 0.0);
+	glScalef(1.0, 2.1, 1.0);
+	glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
+	glutSolidCube(4.0);
+	glColor3f(0.0, 0.0, 0.0);
+	glutWireCube(4.0);
+	glPopMatrix();
+
+	glPushMatrix();	//오른팔
+	glTranslatef(-16.0, -30.0, 0.0);
+	/*
+	if (OnRide == 0) {
+		glRotatef(-HeroMotion, 1.0, 0.0, 0.0);
+	}
+	*/
+	glTranslatef(0.0, -18.0, 0.0);
+	glScalef(1.0, 2.1, 1.0);
+	glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
+	glutSolidCube(4.0);
+	glColor3f(0.0, 0.0, 0.0);
+	glutWireCube(4.0);
+	glPopMatrix();
+
+	if (OnRide == 0 || OnRide == 3) {		//놀이기구 탑승중이 아닐경우
+		glPushMatrix();	//왼쪽다리
+		if (OnRide == 0) {
+			glRotatef(-(HeroMotion / 2.0), 1.0, 0.0, 0.0);
+		}
+		if (OnRide == 3) {
+			glRotatef(45.0, 1.0, 0.0, 0.0);
+		}
+		glTranslatef(-8.0, -60.0, 0.0);
+		glScalef(1.0, 2.1, 1.0);
+		glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
+		glutSolidCube(4.0);
+		glColor3f(0.0, 0.0, 0.0);
+		glutWireCube(4.0);
+		glPopMatrix();
+		glPushMatrix();	//오른쪽다리
+		if (OnRide == 0) {
+			glRotatef(HeroMotion / 2.0, 1.0, 0.0, 0.0);
+		}
+		if (OnRide == 3) {
+			glRotatef(45.0, 1.0, 0.0, 0.0);
+		}
+		glTranslatef(-12.0, -60.0, 0.0);
+		glScalef(1.0, 2.1, 1.0);
+		glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
+		glutSolidCube(4.0);
+		glColor3f(0.0, 0.0, 0.0);
+		glutWireCube(4.0);
+		glPopMatrix();
+	}
+
+	glPopMatrix();
 }
 
 void set_material(int m)
@@ -841,6 +988,20 @@ void drawText(const char* string, float x, float y, float z)
 void display() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GLUquadricObj* pQuad;
+	pQuad = gluNewQuadric();
+
+	glMatrixMode(GL_PROJECTION);	//시점변화를 원활하게 하기위해 여기넣음
+	if (View == 1) {	// 1 = 1인칭 / 0 = 3인칭
+		gluPerspective(60.0f, fAspect, 1.0, 100.0);
+	}
+	else {
+		glOrtho(0.0 * WidthFactor, 100.0 * WidthFactor, 0.0 * HeightFactor, 100.0 * HeightFactor, -300.0, 300.0);
+	}
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glLoadIdentity();
 	gluLookAt(viewer[0], viewer[1], viewer[2], camera[0], camera[1], camera[2], 0, 1, 0);
@@ -862,10 +1023,12 @@ void display() {
 		drawText("* g : Start/stop Giant Wheel", 0, -0.05, 0.82);
 		drawText("* r : Start/stop Roller Coaster", 0, -0.10, 0.82);
 		drawText("* w : Change camera position", 0, -0.15, 0.82);
-		drawText("* + : Move up", 0, -0.20, 0.82);
-		drawText("* - : Move down", 0, -0.25, 0.82);
-		drawText("* Drag mouse on the window in left or right direction: Look around 360 degrees", 0, -0.30, 0.82);
-		drawText("Above actions can also be performed from the right-click context menu", 0, -0.35, 0.82);
+		drawText("* o : first-person perspective", 0, -0.15, 0.82);
+		drawText("* l : third-person perspective", 0, -0.20, 0.82);
+		drawText("* + : Move up", 0, -0.25, 0.82);
+		drawText("* - : Move down", 0, -0.30, 0.82);
+		drawText("* Drag mouse on the window in left or right direction: Look around 360 degrees", 0, -0.35, 0.82);
+		drawText("Above actions can also be performed from the right-click context menu", 0, -0.40, 0.82);
 		drawText("Developed by Karthik A (1BI10CS040)", 0, -0.45, 0.82);
 		glEnable(GL_LIGHTING);
 		glPopMatrix();
@@ -913,11 +1076,38 @@ void display() {
 		glRotatef(gw_spin, 0.0, 0.0, 1.0);
 		draw_gwheel();
 		glPopMatrix();
-	
+
+		glPushMatrix();
+		if (View == 1) {	//1인칭
+			gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
+			glRotatef(ViewUpAngle, 1.0, 0.0, 0.0);
+			glRotatef(ViewAngle, 0.0, 1.0, 0.0);
+			glTranslatef(0.0, 25.0, 0.0);
+			glTranslatef(ViewMoveX, 0.0, ViewMoveZ);
+		}
+		else {
+			glTranslatef(50.0, 50.0, 0.0);
+			if (xRot + MouseRotY < 0.0) {	//각도제한하기
+				glRotatef(0.0, 1.0, 0.0, 0.0);
+			}
+			else if (xRot + MouseRotY > 90.0) {
+				glRotatef(90.0, 1.0, 0.0, 0.0);
+			}
+			else {
+				glRotatef(xRot + MouseRotY, 1.0, 0.0, 0.0);
+			}
+			glRotatef(yRot - MouseRotX, 0.0, 1.0, 0.0);
+		}
+
+		if (OnRide == 0 && View == 0) {	//놀이기구 안탔을때+3인칭 시점일때
+			Hero();	//주인공
+		}
+
+		glPopMatrix();
+		gluDeleteQuadric(pQuad);
+
 		glMatrixMode(GL_MODELVIEW);
-
 		glLoadIdentity();
-
 
 		glRotatef(pan, 0.0, 1.0, 0.0);
 		glRotatef(tilt, 1.0, 0.0, 0.0);
@@ -1138,6 +1328,16 @@ void kb(unsigned char key, int x, int y)
 	if (key == 't') {
 		rain == 1 ? rain = 0 : rain = 1;
 		if (snow == 1) snow = 0;
+	}
+	if (key == 'l') {		//L		//3인칭
+		viewer[0] = 20.0;
+		viewer[1] = 50.0;
+		viewer[2] = 00.0; //시점 변경
+	}
+
+	if (key == 'o') {		//1인칭
+		viewer[0] = 1.0;
+		viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
 	}
 	display();
 }
