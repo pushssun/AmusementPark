@@ -324,10 +324,16 @@ void Hero() {	//주인공 그리기
 	}
 	*/
 	glPushMatrix();	//머리
-	glTranslatef(-10.0, -38.0, 0.0);
+	glRotatef(20, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
+	glTranslatef(-10.0, -39.0, 0.0);
 	glColor3f((float)255 / 255.0, (float)222 / 255.0, (float)191 / 255.0);
 	glutSolidCube(10.0);	//머리 크기
 	glPushMatrix();	//왼쪽 눈
+	glRotatef(20, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
 	glTranslatef(0.2, 1.0, -0.4);
 	glColor3f(0.0, 0.0, 0.0);
 	glutSolidCube(0.25);
@@ -336,6 +342,9 @@ void Hero() {	//주인공 그리기
 	glutSolidCube(1.5);
 	glPopMatrix();
 	glPushMatrix();	//오른쪽 눈
+	glRotatef(20, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
 	glTranslatef(-0.2, 1.0, -0.4);
 	glColor3f(0.0, 0.0, 0.0);
 	glutSolidCube(0.25);
@@ -346,6 +355,9 @@ void Hero() {	//주인공 그리기
 	glPopMatrix();
 
 	glPushMatrix();//몸통
+	glRotatef(20, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
 	glTranslatef(-10.0, -50.0, -0.1);
 	glScalef(1.4, 2.0, 1.0);
 	glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
@@ -355,6 +367,9 @@ void Hero() {	//주인공 그리기
 	glPopMatrix();
 
 	glPushMatrix();	//왼팔
+	glRotatef(20, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
 	glTranslatef(-4.0, -30.0, 0.0);
 	/*
 	if (OnRide == 0) {
@@ -370,6 +385,9 @@ void Hero() {	//주인공 그리기
 	glPopMatrix();
 
 	glPushMatrix();	//오른팔
+	glRotatef(20, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
+	glRotatef(0, 1.0f, 1.0f, 1.0f);
 	glTranslatef(-16.0, -30.0, 0.0);
 	/*
 	if (OnRide == 0) {
@@ -392,6 +410,9 @@ void Hero() {	//주인공 그리기
 		if (OnRide == 3) {
 			glRotatef(45.0, 1.0, 0.0, 0.0);
 		}
+		glRotatef(20, 1.0f, 1.0f, 1.0f);
+		glRotatef(0, 1.0f, 1.0f, 1.0f);
+		glRotatef(0, 1.0f, 1.0f, 1.0f);
 		glTranslatef(-8.0, -60.0, 0.0);
 		glScalef(1.0, 2.1, 1.0);
 		glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
@@ -406,6 +427,9 @@ void Hero() {	//주인공 그리기
 		if (OnRide == 3) {
 			glRotatef(45.0, 1.0, 0.0, 0.0);
 		}
+		glRotatef(20, 1.0f, 1.0f, 1.0f);
+		glRotatef(0, 1.0f, 1.0f, 1.0f);
+		glRotatef(0, 1.0f, 1.0f, 1.0f);
 		glTranslatef(-12.0, -60.0, 0.0);
 		glScalef(1.0, 2.1, 1.0);
 		glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
@@ -1123,7 +1147,7 @@ void display() {
 		else if (fall == SNOW) {
 			drawSnow();
 		}
-		
+
 		if (firework == 1) {
 			PlayFireWork();
 		}
@@ -1318,7 +1342,7 @@ void kb(unsigned char key, int x, int y)
 	if (key == 'f') {
 		FireworkTime = 1;
 		drawFirework();
-		firework == 1 ? firework=0 : firework = 1;
+		firework == 1 ? firework = 0 : firework = 1;
 	}
 	if (key == 's') {
 		snow == 1 ? snow = 0 : snow = 1;
@@ -1508,7 +1532,7 @@ void addMenu()
 	submenu5 = glutCreateMenu(handle_effect);
 	glutAddMenuEntry("Snowing", 0);
 	glutAddMenuEntry("Raining", 1);
-	glutCreateMenu(menu);	
+	glutCreateMenu(menu);
 	glutAddSubMenu("Camera Position", submenu1);
 	glutAddSubMenu("Giant Wheel", submenu2);
 	glutAddSubMenu("Columbus ship", submenu3);
