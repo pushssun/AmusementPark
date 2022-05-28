@@ -57,6 +57,7 @@ int loop;
 int fall = NONE;
 
 void display();
+void drawHero();
 void draw_gwheel();
 void draw_wagon();
 void draw_seat();
@@ -79,8 +80,6 @@ float FireWorkColor[6][4] = { 0 };
 int FireworkTail = 0;
 int FireworkProgress = 0; //불꽃놀이 진행상황
 int FireworkTime = 0;
-
-void drawHero();
 
 void draw_bezier();
 void draw_columbus();
@@ -1256,7 +1255,6 @@ void windowSpecial(int key, int x, int y) {
 	if (key == GLUT_KEY_LEFT) {
 		x_r -= 3;
 		HeroRot += 3;
-		gluLookAt(viewer[0], viewer[1], viewer[2], camera[0], camera[1], camera[2], heroLocationX, heroLocationY, heroLocationZ);
 	}
 	glutPostRedisplay();
 	display();
@@ -1302,7 +1300,6 @@ void kb(unsigned char key, int x, int y)
 			viewer[0] = 70.0;
 			viewer[1] = 50.0;
 			viewer[2] = 0.0; //시점 변경
-			gluLookAt(viewer[0], viewer[1], viewer[2], camera[0], camera[1], camera[2], heroLocationX, heroLocationY, heroLocationZ);
 		}
 	}
 
