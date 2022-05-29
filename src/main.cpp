@@ -442,6 +442,63 @@ void Hero() {	//주인공 그리기
 	glPopMatrix();
 }
 
+void MakeTicketBox() {
+	glPushMatrix();
+
+	glTranslatef(-10.0, 5.0, 0.0);
+
+	glPushMatrix();	//매표소 몸통
+	glScalef(1.0, 1.5, 1.0);
+	glColor3f((float)127 / 255.0, (float)127 / 255.0, (float)127 / 255.0);	//매표소 색
+	glutSolidCube(30.0);
+	glTranslatef(8.0, -7.5, -0.55);//매표소 안
+	glColor3f(0.0, 0.0, 0.0);
+	glutSolidCube(15.0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(0.0, 20.5, 0.0);
+	glRotatef(45.0, 0.0, 1.0, 0.0);
+	glScalef(30.5, 30.0, 30.5);
+	glColor3f((float)200 / 255.0, (float)55 / 255.0, (float)55 / 255.0);	//매표소 지붕 색
+	glutSolidOctahedron();
+	glPopMatrix();
+
+	glPopMatrix();
+}
+
+void TicketOffice() {
+	glPushMatrix();	//롤러코스터 매표소
+	glTranslatef(150.0, 0.0, 230.0);
+	MakeTicketBox();
+	glPopMatrix();
+
+	glPushMatrix();	//바이킹 매표소
+	glTranslatef(200.0, 0.0, -20.0);
+	MakeTicketBox();
+	glPopMatrix();
+
+	glPushMatrix();	//관람차 매표소
+	glTranslatef(-250.0, 0.0, -280.0);
+	MakeTicketBox();
+	glPopMatrix();
+}
+
+void ChangeRide() {
+	if (HeroMoveX <= 17.5 && HeroMoveX >= 13.5 && HeroMoveZ <= 10.0 && HeroMoveZ >= 9.0 && HeroRot == 180.0) {	//바이킹 태우기
+		OnRide = 1;
+	}
+	if (HeroMoveX <= 2.0 && HeroMoveX >= -2.0 && HeroMoveZ <= -5.0 && HeroMoveZ >= -6.0 && HeroRot == 180.0) {	//관람차 태우기
+		OnRide = 2;
+	}
+	if (HeroMoveX <= -10.5 && HeroMoveX >= -11.5 && HeroMoveZ <= -19.0 && HeroMoveZ >= -23.5 && HeroRot == 90.0) {	//자이드롭 태우기
+		OnRide = 3;
+	}
+	if (HeroMoveX <= 30.5 && HeroMoveX >= 29.5 && HeroMoveZ <= -24.0 && HeroMoveZ >= -28 && HeroRot == -90.0) {	//롤러코스터 태우기
+		OnRide = 4;
+	}
+}
+
 void set_material(int m)
 {
 	if (m == 0)
@@ -1100,6 +1157,7 @@ void display() {
 		glRotatef(gw_spin, 0.0, 0.0, 1.0);
 		draw_gwheel();
 		glPopMatrix();
+		TicketOffice();
 
 		glPushMatrix();
 		if (View == 1) {	//1인칭
@@ -1362,6 +1420,15 @@ void kb(unsigned char key, int x, int y)
 	if (key == 'o') {		//1인칭
 		viewer[0] = 1.0;
 		viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
+	}
+
+	if (key == 'p') {
+		if (OnRide == 0 && View == 0) {	//놀이기구 탑승
+			ChangeRide();
+		}
+		else {
+			OnRide = 0;
+		}
 	}
 	display();
 }
