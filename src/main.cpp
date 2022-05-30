@@ -45,10 +45,6 @@ int HeroMoving = 0;
 int HeroMoveCheck = 0;
 int OnRide = 0;	// 0 = 안탐, 1 = 바이킹, 2 = 관람차, 3 = 자이드롭, 4 = 롤러코스터  - 시점변환시 관람차 써도될듯, 시점 다시 돌아올때 위치 초기화 하고 ride 0으로 만들기
 
-float heroLocationX = 150.5;
-float heroLocationY = 50.0;
-float heroLocationZ = -200.0;
-
 float slowdown = 2.0;
 float velocity = 0.0;
 float zoom = -5.0;
@@ -77,6 +73,10 @@ GLdouble curr = 0, prev = 0, gw_spin = 0.0, angle = 0.0, c_angle = 90.0, gw_widt
 double bez[][3] = {
     {30,10,-200},{30,10,-110},	{30,10,10},	{30,10,50},	{30,70,100}, {60,90,140}, {80,80,100}, {70,80,70}, {0,50,80}, {-20,30,80},{-45, 25, 60}, {-70,20,50}, {-40,10,30}, {-30,30,10}, {-90,30,20}, {-120,130,60}, {-115,160,75}, {-110, 200, 130}, {-100, 160, 200}, {-90,130,250}, {-50,150,260}, {-25,150,260}, {-5,140,260}, {25,160,260}, {40,130,230}, {55,110,210}, {70, 90, 160}, {65, 100,140}, {45, 110, 110}, {25, 120, 90}, {-50, 140, 100}, {-100, 150, 100}, {-150, 130, 100},{-170,120,110}, {-175,120, 180 },{-120,90,150}, {-170, 110, 120}, {-190, 80,  140}, {-170, 60, 150},/**/  {-160, 50, 160},{-100, 25, 170},{-15, 1.5, 170},{50, 0, 170}, {100, 0, 170}, {160, 0, 170},{200, 20, 170}, {260, 50, 170},{290, 50, 150}, {320, 65, 110},{330, 65, 80},{340, 65, 60}, {350, 80, 30}, {350, 130, 0},{350, 100, -60},{330, 70, -100},{310, 100, -170},{280, 80, -210},{250, 60, -250},{230, 30, -280}, {200, 55, -290}, {170, 35, -270}, {150, 22, -250}, {100, 20, -230},{80, 35, -200},{60, 30, -170}, {35, 20, -150}, {30,10,-115}, {30,10,-105},{30,10,-105}, {30,10,-105}
 };
+
+float heroLocationX = -movcord[0];
+float heroLocationY = 50.0;
+float heroLocationZ = -movcord[2];
 
 //불꽃놀이
 float FireWorkPosition[6][3] = { 0 };
@@ -1328,7 +1328,6 @@ void windowSpecial(int key, int x, int y) {
     if (key == GLUT_KEY_LEFT) {
         x_r -= 3;
         HeroRot += 3;
-        gluLookAt(viewer[0], viewer[1], viewer[2], camera[0], camera[1], camera[2], heroLocationX, heroLocationY, heroLocationZ);
     }
     glutPostRedisplay();
     display();
@@ -1371,15 +1370,16 @@ void kb(unsigned char key, int x, int y)
     if (key == 'l') {		//L		//3인칭
         if (camw == 0) {
             view = 1;
-            viewer[0] = 20.0;
+            viewer[0] = 70.0;
             viewer[1] = 50.0;
             viewer[2] = 0.0; //시점 변경
+            movcord[1] = -15;
         }
     }
 
     if (key == 'o') {		//1인칭
         view = 0;
-        viewer[1] = 0.0;
+        viewer[1] = movcord[1] = 0.0;
     }
 
     if (key == 'p') {
@@ -1453,9 +1453,10 @@ void place_camera(int action)
         movcord[1] = -10;
         movcord[2] = 200;
 
-        heroLocationX = 150.0;
+        heroLocationX = -movcord[0];
         heroLocationY = 50.0;
-        heroLocationZ = -200.0;
+        heroLocationZ = -movcord[2];
+
         viewer[0] = 1.0;
         viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
 
@@ -1464,6 +1465,7 @@ void place_camera(int action)
             viewer[0] = 70.0;
             viewer[1] = 50.0;
             viewer[2] = 0.0; //시점 변경
+            movcord[1] = -15.0;
         }
     }
 }
