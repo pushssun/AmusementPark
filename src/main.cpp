@@ -331,81 +331,89 @@ void Hero() {	//주인공 그리기
 
 
     glPushMatrix();	//머리
-    glTranslatef(-10.0, -39.0, 0.0);
+    glTranslatef(-10.0, -43.0, 0.0);
     glColor3f((float)255 / 255.0, (float)222 / 255.0, (float)191 / 255.0);
-    glutSolidCube(10.0);	//머리 크기
+    glutSolidCube(5.0);	//머리 크기
 
     glPushMatrix();	//왼쪽 눈
-    glTranslatef(3.0, 1.0, 4.0);
+    glTranslatef(1.0, 0.5, 2.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutSolidCube(2.5);
+    glutSolidCube(1.25);
     glTranslatef(0.0, 0.0, -0.1);
     glColor3f(1.0, 1.0, 1.0);
-    glutSolidCube(1.5);
+    glutSolidCube(0.75);
     glPopMatrix();
 
     glPushMatrix();	//오른쪽 눈
-    glTranslatef(-3.0, 1.0, 4.0);
+    glTranslatef(-1.0, 0.5, 2.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutSolidCube(2.5);
+    glutSolidCube(1.25);
     glTranslatef(0.0, 0.0, -0.1);
     glColor3f(1.0, 1.0, 1.0);
-    glutSolidCube(1.5);
+    glutSolidCube(0.75);
     glPopMatrix();
 
     glPopMatrix();
-    glTranslatef(0.0, -50.0, 0.0);
+    glTranslatef(0.0, -48.5, 0.0);
     glPushMatrix();//몸통
     glTranslatef(-10.0, 0.0, -0.1);
     glScalef(1.4, 2.0, 1.0);
     glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
-    glutSolidCube(6.0);
+    glutSolidCube(3.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(6.0);
+    glutWireCube(3.0);
     glPopMatrix();
 
     glPushMatrix();	//왼팔
-    glTranslatef(-4.0, 2.0, 0.0);
+    glTranslatef(-7.0, 1.0, 0.0);
     glRotatef(HeroMotion, 1.0, 0.0, 0.0);
     glTranslatef(0.0, -1.0, 0.0);
     glScalef(1.0, 3.1, 1.0);
     glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
-    glutSolidCube(4.0);
+    glutSolidCube(2.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(4.0);
+    glutWireCube(2.0);
     glPopMatrix();
 
     glPushMatrix();	//오른팔
 
-    glTranslatef(-16.0, 2.0, 0.0);
+    glTranslatef(-13.0, 1.0, 0.0);
     glRotatef(-HeroMotion, 1.0, 0.0, 0.0);
     glTranslatef(0.0, -1.0, 0.0);
     glScalef(1.0, 3.1, 1.0);
     glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
-    glutSolidCube(4.0);
+    glutSolidCube(2.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(4.0);
+    glutWireCube(2.0);
     glPopMatrix();
 
-    glTranslatef(0.0, -10.0, 0.0);
+    glTranslatef(0.0, -2.0, 0.0);
     glPushMatrix();	//왼쪽다리
-    glRotatef(-(HeroMotion / 2.0), 1.0, 0.0, 0.0);
-    glTranslatef(-8.0, -5.0, 0.0);
+    if (OnRide == 0) glRotatef(-(HeroMotion / 2.0), 1.0, 0.0, 0.0);
+    else {
+        glRotatef(-90, 1.0, 0.0, 0.0);
+        glRotatef(2, 0.0, 0.0, 1.0);
+    }
+    glTranslatef(-9.0, -5.0, 0.0);
     glScalef(1.0, 4.1, 1.0);
     glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
-    glutSolidCube(4.0);
+    glutSolidCube(2.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(4.0);
+    glutWireCube(2.0);
     glPopMatrix();
 
     glPushMatrix();	//오른쪽다리
-    glRotatef(HeroMotion / 2.0, 1.0, 0.0, 0.0);
-    glTranslatef(-12.0, -5.0, 0.0);
+    if (OnRide == 0) glRotatef(HeroMotion / 2.0, 1.0, 0.0, 0.0);
+    else {
+        glRotatef(-90, 1.0, 0.0, 0.0);
+        glRotatef(-2, 0.0, 0.0, 1.0);
+    }
+    glTranslatef(-11.0, -5.0, 0.0);
     glScalef(1.0, 4.1, 1.0);
     glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
-    glutSolidCube(4.0);
+    glutSolidCube(2.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(4.0);
+    glutWireCube(2.0);
     glPopMatrix();
 
     glPopMatrix();
@@ -861,6 +869,10 @@ void idle()
             movcord[0] = -co_x - cos(c_angle * 3.14 / 180.0) * 50.0;
             movcord[1] = -co_y - 35 - fabs(cos(c_angle * 3.14 / 180.0)) * 35;
             movcord[2] = co_z;
+
+            heroLocationX = -movcord[0];
+            heroLocationY = -movcord[1] + 40;
+            heroLocationZ = -movcord[2];
         }
     }
 
@@ -871,8 +883,8 @@ void idle()
             roll = 0;
             bez_prog = 0.0;
             ni = 0.0;
-            viewer[0] = 1.0;
-            viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0;
+            //viewer[0] = 1.0;
+            //viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0;
             return;
         }
         if (bez_prog >= 1.0)
@@ -891,8 +903,11 @@ void idle()
         {
             movcord[0] = -gw_x + (gw_radius * sin(gw_spin * 3.14 / 180.0)) + sin(gw_spin / 10.0) - 2;
             movcord[2] = gw_z;
-
             movcord[1] = -gw_y - (gw_radius * cos(gw_spin * 3.14 / 180.0)) + 6;
+
+            heroLocationX = -movcord[0];
+            heroLocationZ = -movcord[2] - 10;
+            heroLocationY = -movcord[1] + 50;
         }
     }
 
@@ -1147,7 +1162,7 @@ void display() {
         glPopMatrix();
 
 
-        if (view && camw == 0) {
+        if (view) {
             drawHero();	//주인공
         }
 
@@ -1207,8 +1222,16 @@ void moveToBezier(double t) {
         viewer[2] = 0.0;
 
         getCurveAt(&movcord[0], &movcord[1], &movcord[2], ni, t);
+
+        heroLocationX = -movcord[0];
+        heroLocationY = -movcord[1];
+        heroLocationZ = -movcord[2];
+
         movcord[0] += 1.0;
         movcord[1] -= 3.5;
+
+        heroLocationX = -movcord[0];
+        heroLocationY = -movcord[1] + 50;
 
         camera[0] = bezier(bez[0 + ni][0], bez[1 + ni][0], bez[2 + ni][0], bez[3 + ni][0], t + 0.1) - bezier(bez[0 + ni][0], bez[1 + ni][0], bez[2 + ni][0], bez[3 + ni][0], t);
         camera[1] = bezier(bez[0 + ni][1], bez[1 + ni][1], bez[2 + ni][1], bez[3 + ni][1], t + 0.1) - bezier(bez[0 + ni][1], bez[1 + ni][1], bez[2 + ni][1], bez[3 + ni][1], t);
@@ -1392,16 +1415,16 @@ void kb(unsigned char key, int x, int y)
         cout << "z"<< HeroMoveZ;
         ChangeRide();
         if (OnRide == 3) { //roller
-            place_camera(camw=3);
+            place_camera(3);
         }
         if (OnRide == 2) { //columbus
             place_camera(2);
         }
         if (OnRide == 1) { //wheel
-            place_camera(camw = 1);
+            place_camera(1);
         }
         if (OnRide == 0) {
-            place_camera(camw = 0);
+            place_camera(0);
         }
         //place_camera(camw = (++camw) % 4);
     }
@@ -1430,19 +1453,18 @@ void kb(unsigned char key, int x, int y)
         if (snow == 1) snow = 0;
     }
     if (key == 'l') {		//L		//3인칭
-        if (camw == 0) {
-            view = 1;
-            viewer[0] = 70.0;
-            viewer[1] = 50.0;
-            viewer[2] = 0.0; //시점 변경
-            movcord[1] = -15;
-        }
+        
+        view = 1;
+        viewer[0] = 70.0;
+        viewer[1] = 20.0;
+        viewer[2] = 0.0; //시점 변경
+        
     }
 
     if (key == 'o') {		//1인칭
         view = 0;
+        viewer[0] = 1.0;
         viewer[1] = 0.0;
-        movcord[1] = -10.0;
     }
 
     if (key == 'p') {
@@ -1487,28 +1509,38 @@ void place_camera(int action)
         movcord[0] = -co_x + cos(c_angle * 3.14 / 180.0) * 50.0;
         movcord[1] = -co_y - 38;
         movcord[2] = co_z;
+
+        heroLocationX = -movcord[0];
+        heroLocationY = -movcord[1] + 50;
+        heroLocationZ = -movcord[2];
     }
     if (camw == 3)				//roll
     {
         //view = 0;
         moveToBezier(bez_prog);
 
-        viewer[0] = 1.0;
-        viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = 0.0;
+        //viewer[0] = 1.0;
+        //viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = 0.0;
 
         x_r = -45;
         HeroRot = -45;
     }
     if (camw == 1)			//giantwing
     {
-        state = view;
+        //state = view;
         //view = 0;
-        viewer[0] = 1.0;
-        viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = 0.0;
+        //viewer[0] = 1.0;
+        //viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = 0.0;
 
         movcord[0] = -gw_x + (gw_radius * sin(gw_spin * 3.14 / 180.0)) + sin(gw_spin / 10.0);
         movcord[2] = gw_z;
         movcord[1] = -gw_y - (gw_radius * cos(gw_spin * 3.14 / 180.0)) + 6;
+
+        HeroRot = 90;
+
+        heroLocationX = -movcord[0];
+        heroLocationZ = -movcord[2] - 10;
+        heroLocationY = -movcord[1] * 2 - 40;
     }
     if (camw == 0) {
         x_r = 180;
