@@ -31,7 +31,6 @@ GLfloat WidthFactor;
 GLfloat HeightFactor;
 
 float HeroMoveX = -10.0;
-float HeroMoveZ = 0.0;
 
 float HeroMotion;
 float HeroMotionAdd = 10.0;
@@ -333,12 +332,12 @@ void Hero() {	//주인공 그리기
     glPushMatrix();	//머리
     glTranslatef(-10.0, -43.0, 0.0);
     glColor3f((float)255 / 255.0, (float)222 / 255.0, (float)191 / 255.0);
-    glutSolidCube(5.0);	//머리 크기
+    glutSolidCube(4.0);	//머리 크기
 
     glPushMatrix();	//왼쪽 눈
     glTranslatef(1.0, 0.5, 2.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutSolidCube(1.25);
+    glutSolidCube(1.0);
     glTranslatef(0.0, 0.0, -0.1);
     glColor3f(1.0, 1.0, 1.0);
     glutSolidCube(0.75);
@@ -347,7 +346,7 @@ void Hero() {	//주인공 그리기
     glPushMatrix();	//오른쪽 눈
     glTranslatef(-1.0, 0.5, 2.0);
     glColor3f(0.0, 0.0, 0.0);
-    glutSolidCube(1.25);
+    glutSolidCube(1.0);
     glTranslatef(0.0, 0.0, -0.1);
     glColor3f(1.0, 1.0, 1.0);
     glutSolidCube(0.75);
@@ -370,9 +369,9 @@ void Hero() {	//주인공 그리기
     glTranslatef(0.0, -1.0, 0.0);
     glScalef(1.0, 3.1, 1.0);
     glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
-    glutSolidCube(2.0);
+    glutSolidCube(1.5);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(2.0);
+    glutWireCube(1.5);
     glPopMatrix();
 
     glPushMatrix();	//오른팔
@@ -382,9 +381,9 @@ void Hero() {	//주인공 그리기
     glTranslatef(0.0, -1.0, 0.0);
     glScalef(1.0, 3.1, 1.0);
     glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
-    glutSolidCube(2.0);
+    glutSolidCube(1.5);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(2.0);
+    glutWireCube(1.5);
     glPopMatrix();
 
     glTranslatef(0.0, -2.0, 0.0);
@@ -397,9 +396,9 @@ void Hero() {	//주인공 그리기
     glTranslatef(-9.0, -5.0, 0.0);
     glScalef(1.0, 4.1, 1.0);
     glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
-    glutSolidCube(2.0);
+    glutSolidCube(1.5);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(2.0);
+    glutWireCube(1.5);
     glPopMatrix();
 
     glPushMatrix();	//오른쪽다리
@@ -411,9 +410,9 @@ void Hero() {	//주인공 그리기
     glTranslatef(-11.0, -5.0, 0.0);
     glScalef(1.0, 4.1, 1.0);
     glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
-    glutSolidCube(2.0);
+    glutSolidCube(1.5);
     glColor3f(0.0, 0.0, 0.0);
-    glutWireCube(2.0);
+    glutWireCube(1.5);
     glPopMatrix();
 
     glPopMatrix();
@@ -478,7 +477,7 @@ void ChangeRide() {
             OnRide = 1;
         }
     }
-    if (HeroMoveX <= 420.0 && HeroMoveX >=  350.0) {	//롤러코스터 태우기
+    if (HeroMoveX <= 420.0 && HeroMoveX >= 350.0) {	//롤러코스터 태우기
         if (OnRide == 3) {
             OnRide = 0;
         }
@@ -486,7 +485,7 @@ void ChangeRide() {
             OnRide = 3;
         }
     }
-    
+
 }
 
 void set_material(int m)
@@ -982,7 +981,7 @@ void draw_loco()
     glEnable(GL_CLIP_PLANE0);
     glClipPlane(GL_CLIP_PLANE0, eqn);
     glScalef(1.3, 2.0, 1.5);
-    glutSolidCube(3.0);
+    glutSolidCube(5.0);
     glScalef(1 / 1.3, 1 / 2.0, 1 / 1.5);
     glDisable(GL_CLIP_PLANE0);
     glRotatef(90.0, 1.0, 0.0, 0.0);
@@ -1217,21 +1216,21 @@ void moveToBezier(double t) {
 
     if (camw == 3)
     {
-        viewer[0] = 1.0;
-        viewer[1] = 0.0;
-        viewer[2] = 0.0;
+        //viewer[0] = 1.0;
+        //viewer[1] = 0.0;
+        //viewer[2] = 0.0;
 
         getCurveAt(&movcord[0], &movcord[1], &movcord[2], ni, t);
 
         heroLocationX = -movcord[0];
         heroLocationY = -movcord[1];
-        heroLocationZ = -movcord[2];
+        heroLocationZ = -movcord[2] + 10;
 
         movcord[0] += 1.0;
         movcord[1] -= 3.5;
-
-        heroLocationX = -movcord[0];
-        heroLocationY = -movcord[1] + 50;
+        
+        heroLocationX = -movcord[0] + 10;
+        heroLocationY = -movcord[1] + 48;
 
         camera[0] = bezier(bez[0 + ni][0], bez[1 + ni][0], bez[2 + ni][0], bez[3 + ni][0], t + 0.1) - bezier(bez[0 + ni][0], bez[1 + ni][0], bez[2 + ni][0], bez[3 + ni][0], t);
         camera[1] = bezier(bez[0 + ni][1], bez[1 + ni][1], bez[2 + ni][1], bez[3 + ni][1], t + 0.1) - bezier(bez[0 + ni][1], bez[1 + ni][1], bez[2 + ni][1], bez[3 + ni][1], t);
@@ -1387,7 +1386,6 @@ void windowSpecial(int key, int x, int y) {
 
         HeroMoving = 1;
         HeroMoveCheck = 0;
-        HeroMoveZ += 3;
     }
     if (key == GLUT_KEY_LEFT) {
         x_r -= 3;
@@ -1395,7 +1393,6 @@ void windowSpecial(int key, int x, int y) {
 
         HeroMoving = 1;
         HeroMoveCheck = 0;
-        HeroMoveZ -= 3;
     }
     glutPostRedisplay();
     display();
@@ -1411,8 +1408,6 @@ void kb(unsigned char key, int x, int y)
         initSky();
     }
     if (key == 'w') {
-        cout << "X" << HeroMoveX;
-        cout << "z"<< HeroMoveZ;
         ChangeRide();
         if (OnRide == 3) { //roller
             place_camera(3);
@@ -1453,12 +1448,12 @@ void kb(unsigned char key, int x, int y)
         if (snow == 1) snow = 0;
     }
     if (key == 'l') {		//L		//3인칭
-        
+
         view = 1;
         viewer[0] = 70.0;
         viewer[1] = 20.0;
         viewer[2] = 0.0; //시점 변경
-        
+
     }
 
     if (key == 'o') {		//1인칭
@@ -1467,15 +1462,6 @@ void kb(unsigned char key, int x, int y)
         viewer[1] = 0.0;
     }
 
-    if (key == 'p') {
-        //if (OnRide == 0 && view == 0) {	//놀이기구 탑승
-         //   ChangeRide();
-        //}
-        //else {
-       //     OnRide = 0;
-      //  }
-
-    }
     display();
 }
 
@@ -1556,8 +1542,8 @@ void place_camera(int action)
         heroLocationY = 50.0;
         heroLocationZ = -movcord[2];
 
-       viewer[0] = 1.0;
-       viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
+        viewer[0] = 1.0;
+        viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
 
         if (state == 1) {
             view = 1;
