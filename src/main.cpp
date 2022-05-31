@@ -9,6 +9,7 @@
 #include <string.h>
 #include<mmsystem.h>
 #include<Windows.h>
+#include <iostream>
 
 using namespace std;
 
@@ -29,8 +30,8 @@ GLfloat fAspect;
 GLfloat WidthFactor;
 GLfloat HeightFactor;
 
-float HeroMoveX = 17.0;
-float HeroMoveZ = -17.0;
+float HeroMoveX = -10.0;
+float HeroMoveZ = 0.0;
 
 float HeroMotion;
 float HeroMotionAdd = 10.0;
@@ -453,18 +454,31 @@ void TicketOffice() {
 }
 
 void ChangeRide() {
-    if (HeroMoveX <= 17.5 && HeroMoveX >= 13.5 && HeroMoveZ <= 10.0 && HeroMoveZ >= 9.0 && HeroRot == 180.0) {	//바이킹 태우기
-        OnRide = 1;
+    if (HeroMoveX <= 270.0 && HeroMoveX >= 200.0) {	//바이킹 태우기
+        if (OnRide == 2) {
+            OnRide = 0;
+        }
+        else {
+            OnRide = 2;
+        }
     }
-    if (HeroMoveX <= 2.0 && HeroMoveX >= -2.0 && HeroMoveZ <= -5.0 && HeroMoveZ >= -6.0 && HeroRot == 180.0) {	//관람차 태우기
-        OnRide = 2;
+    if (HeroMoveX <= 520.0 && HeroMoveX >= 450.0) {	//관람차 태우기
+        if (OnRide == 1) {
+            OnRide = 0;
+        }
+        else {
+            OnRide = 1;
+        }
     }
-    if (HeroMoveX <= -10.5 && HeroMoveX >= -11.5 && HeroMoveZ <= -19.0 && HeroMoveZ >= -23.5 && HeroRot == 90.0) {	//자이드롭 태우기
-        OnRide = 3;
+    if (HeroMoveX <= 420.0 && HeroMoveX >=  350.0) {	//롤러코스터 태우기
+        if (OnRide == 3) {
+            OnRide = 0;
+        }
+        else {
+            OnRide = 3;
+        }
     }
-    if (HeroMoveX <= 30.5 && HeroMoveX >= 29.5 && HeroMoveZ <= -24.0 && HeroMoveZ >= -28 && HeroRot == -90.0) {	//롤러코스터 태우기
-        OnRide = 4;
-    }
+    
 }
 
 void set_material(int m)
@@ -1330,6 +1344,7 @@ void windowSpecial(int key, int x, int y) {
 
         HeroMoving = 1;
         HeroMoveCheck = 0;
+        HeroMoveX += 3;
     }
     if (key == GLUT_KEY_DOWN)
     {
@@ -1341,6 +1356,7 @@ void windowSpecial(int key, int x, int y) {
 
         HeroMoving = 1;
         HeroMoveCheck = 0;
+        HeroMoveX -= 3;
     }
     if (key == GLUT_KEY_RIGHT) {
         x_r += 3;
@@ -1348,6 +1364,7 @@ void windowSpecial(int key, int x, int y) {
 
         HeroMoving = 1;
         HeroMoveCheck = 0;
+        HeroMoveZ += 3;
     }
     if (key == GLUT_KEY_LEFT) {
         x_r -= 3;
@@ -1355,6 +1372,7 @@ void windowSpecial(int key, int x, int y) {
 
         HeroMoving = 1;
         HeroMoveCheck = 0;
+        HeroMoveZ -= 3;
     }
     glutPostRedisplay();
     display();
@@ -1369,7 +1387,24 @@ void kb(unsigned char key, int x, int y)
         background = (background + 1) % 3;
         initSky();
     }
-    if (key == 'w') place_camera(camw = (++camw) % 4);
+    if (key == 'w') {
+        cout << "X" << HeroMoveX;
+        cout << "z"<< HeroMoveZ;
+        ChangeRide();
+        if (OnRide == 3) { //roller
+            place_camera(camw=3);
+        }
+        if (OnRide == 2) { //columbus
+            place_camera(2);
+        }
+        if (OnRide == 1) { //wheel
+            place_camera(camw = 1);
+        }
+        if (OnRide == 0) {
+            place_camera(camw = 0);
+        }
+        //place_camera(camw = (++camw) % 4);
+    }
 
     if (key == 'h')	help == 0 ? (help = 1) : (help = 0);
     if (key == 'g')	gw == 0 ? (gw = 1) : (gw = 0);
@@ -1411,12 +1446,13 @@ void kb(unsigned char key, int x, int y)
     }
 
     if (key == 'p') {
-        if (OnRide == 0 && view == 0) {	//놀이기구 탑승
-            ChangeRide();
-        }
-        else {
-            OnRide = 0;
-        }
+        //if (OnRide == 0 && view == 0) {	//놀이기구 탑승
+         //   ChangeRide();
+        //}
+        //else {
+       //     OnRide = 0;
+      //  }
+
     }
     display();
 }
@@ -1445,8 +1481,7 @@ void place_camera(int action)
     camw = action;
     if (camw == 2)			//columbus
     {
-        OnRide = 1;
-        view = 0;
+        //view = 0;
         viewer[1] = 0.0;
 
         movcord[0] = -co_x + cos(c_angle * 3.14 / 180.0) * 50.0;
@@ -1455,8 +1490,7 @@ void place_camera(int action)
     }
     if (camw == 3)				//roll
     {
-        OnRide = 1;
-        view = 0;
+        //view = 0;
         moveToBezier(bez_prog);
 
         viewer[0] = 1.0;
@@ -1467,9 +1501,8 @@ void place_camera(int action)
     }
     if (camw == 1)			//giantwing
     {
-        OnRide = 1;
         state = view;
-        view = 0;
+        //view = 0;
         viewer[0] = 1.0;
         viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = 0.0;
 
@@ -1482,16 +1515,17 @@ void place_camera(int action)
         HeroRot = -90.0;
         OnRide = 0;
 
-        movcord[0] = -150;
+        movcord[0] = -500;
         movcord[1] = -10;
         movcord[2] = 200;
+        HeroMoveX = -10;
 
         heroLocationX = -movcord[0];
         heroLocationY = 50.0;
         heroLocationZ = -movcord[2];
 
-        viewer[0] = 1.0;
-        viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
+       viewer[0] = 1.0;
+       viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
 
         if (state == 1) {
             view = 1;
