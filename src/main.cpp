@@ -308,6 +308,24 @@ void FireworkPlay(int value) {
     glutPostRedisplay();
 }
 
+void RotArmLeg(int value) {
+    if (HeroMoving == 1) {	//주인공 팔다리 회전
+        HeroMotion += HeroMotionAdd;
+        if (HeroMotion > 45 || HeroMotion < -45) {
+            HeroMotionAdd = -HeroMotionAdd;
+        }
+    }
+
+    HeroMoveCheck++;
+    if (HeroMoveCheck == 3) {	//안움직이면 팔다리 아래로
+        HeroMoving = 0;
+        HeroMotion = 0.0;
+    }
+
+    glutTimerFunc(40, RotArmLeg, 1);
+    glutPostRedisplay();
+}
+
 void Hero() {	//주인공 그리기
 
 
@@ -335,9 +353,9 @@ void Hero() {	//주인공 그리기
     glPopMatrix();
 
     glPopMatrix();
-
+    glTranslatef(0.0, -50.0, 0.0);
     glPushMatrix();//몸통
-    glTranslatef(-10.0, -50.0, -0.1);
+    glTranslatef(-10.0, 0.0, -0.1);
     glScalef(1.4, 2.0, 1.0);
     glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
     glutSolidCube(6.0);
@@ -346,10 +364,10 @@ void Hero() {	//주인공 그리기
     glPopMatrix();
 
     glPushMatrix();	//왼팔
-    glTranslatef(-4.0, -30.0, 0.0);
+    glTranslatef(-4.0, 2.0, 0.0);
     glRotatef(HeroMotion, 1.0, 0.0, 0.0);
-    glTranslatef(0.0, -18.0, 0.0);
-    glScalef(1.0, 2.1, 1.0);
+    glTranslatef(0.0, -1.0, 0.0);
+    glScalef(1.0, 3.1, 1.0);
     glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
     glutSolidCube(4.0);
     glColor3f(0.0, 0.0, 0.0);
@@ -358,20 +376,21 @@ void Hero() {	//주인공 그리기
 
     glPushMatrix();	//오른팔
 
-    glTranslatef(-16.0, -30.0, 0.0);
+    glTranslatef(-16.0, 2.0, 0.0);
     glRotatef(-HeroMotion, 1.0, 0.0, 0.0);
-    glTranslatef(0.0, -18.0, 0.0);
-    glScalef(1.0, 2.1, 1.0);
+    glTranslatef(0.0, -1.0, 0.0);
+    glScalef(1.0, 3.1, 1.0);
     glColor3f((float)255 / 255.0, (float)180 / 255.0, (float)190 / 255.0);
     glutSolidCube(4.0);
     glColor3f(0.0, 0.0, 0.0);
     glutWireCube(4.0);
     glPopMatrix();
 
+    glTranslatef(0.0, -10.0, 0.0);
     glPushMatrix();	//왼쪽다리
     glRotatef(-(HeroMotion / 2.0), 1.0, 0.0, 0.0);
-    glTranslatef(-8.0, -60.0, 0.0);
-    glScalef(1.0, 2.1, 1.0);
+    glTranslatef(-8.0, -5.0, 0.0);
+    glScalef(1.0, 4.1, 1.0);
     glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
     glutSolidCube(4.0);
     glColor3f(0.0, 0.0, 0.0);
@@ -380,8 +399,8 @@ void Hero() {	//주인공 그리기
 
     glPushMatrix();	//오른쪽다리
     glRotatef(HeroMotion / 2.0, 1.0, 0.0, 0.0);
-    glTranslatef(-12.0, -60.0, 0.0);
-    glScalef(1.0, 2.1, 1.0);
+    glTranslatef(-12.0, -5.0, 0.0);
+    glScalef(1.0, 4.1, 1.0);
     glColor3f((float)63 / 255.0, (float)77 / 255.0, (float)181 / 255.0);
     glutSolidCube(4.0);
     glColor3f(0.0, 0.0, 0.0);
@@ -1309,7 +1328,8 @@ void windowSpecial(int key, int x, int y) {
         heroLocationX -= 5 * cos(-1 * x_r * 3.14 / 180.0);
         heroLocationZ -= 5 * sin(1 * x_r * 3.14 / 180.0);
 
-
+        HeroMoving = 1;
+        HeroMoveCheck = 0;
     }
     if (key == GLUT_KEY_DOWN)
     {
@@ -1319,15 +1339,22 @@ void windowSpecial(int key, int x, int y) {
         heroLocationX += 5 * cos(-1 * x_r * 3.14 / 180.0);
         heroLocationZ += 5 * sin(1 * x_r * 3.14 / 180.0);
 
-
+        HeroMoving = 1;
+        HeroMoveCheck = 0;
     }
     if (key == GLUT_KEY_RIGHT) {
         x_r += 3;
         HeroRot -= 3;
+
+        HeroMoving = 1;
+        HeroMoveCheck = 0;
     }
     if (key == GLUT_KEY_LEFT) {
         x_r -= 3;
         HeroRot += 3;
+
+        HeroMoving = 1;
+        HeroMoveCheck = 0;
     }
     glutPostRedisplay();
     display();
@@ -1379,7 +1406,8 @@ void kb(unsigned char key, int x, int y)
 
     if (key == 'o') {		//1인칭
         view = 0;
-        viewer[1] = movcord[1] = 0.0;
+        viewer[1] = 0.0;
+        movcord[1] = -10.0;
     }
 
     if (key == 'p') {
@@ -1417,6 +1445,7 @@ void place_camera(int action)
     camw = action;
     if (camw == 2)			//columbus
     {
+        OnRide = 1;
         view = 0;
         viewer[1] = 0.0;
 
@@ -1426,6 +1455,7 @@ void place_camera(int action)
     }
     if (camw == 3)				//roll
     {
+        OnRide = 1;
         view = 0;
         moveToBezier(bez_prog);
 
@@ -1437,9 +1467,11 @@ void place_camera(int action)
     }
     if (camw == 1)			//giantwing
     {
+        OnRide = 1;
         state = view;
         view = 0;
-        viewer[1] = 0.0;
+        viewer[0] = 1.0;
+        viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = 0.0;
 
         movcord[0] = -gw_x + (gw_radius * sin(gw_spin * 3.14 / 180.0)) + sin(gw_spin / 10.0);
         movcord[2] = gw_z;
@@ -1448,6 +1480,7 @@ void place_camera(int action)
     if (camw == 0) {
         x_r = 180;
         HeroRot = -90.0;
+        OnRide = 0;
 
         movcord[0] = -150;
         movcord[1] = -10;
@@ -1619,6 +1652,7 @@ int main(int argc, char** argv)
     glutReshapeFunc(displayReshape);
     glutKeyboardFunc(kb);
     glutMotionFunc(handleMouse);
+    glutTimerFunc(40, RotArmLeg, 1);
     glutTimerFunc(40, FireworkPlay, 1);
     glutPassiveMotionFunc(passiveMouse);
     glutIdleFunc(idle);
