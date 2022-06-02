@@ -78,6 +78,13 @@ float heroLocationX = -movcord[0];
 float heroLocationY = 50.0;
 float heroLocationZ = -movcord[2];
 
+float RTOfficeX = 150.0;
+float RTOfficeZ = 230.0;
+float BTOfficeX = 200.0;
+float BTOfficeZ = -20.0;
+float GTOfficeX = -250.0;
+float GTOfficeZ = -280.0;
+
 //불꽃놀이
 float FireWorkPosition[6][3] = { 0 };
 float FireWorkColor[6][4] = { 0 };
@@ -330,7 +337,7 @@ void Hero() {	//주인공 그리기
 
 
     glPushMatrix();	//머리
-    glTranslatef(-10.0, -43.0, 0.0);
+    glTranslatef(-10.0, -47.5, 0.0);
     glColor3f((float)255 / 255.0, (float)222 / 255.0, (float)191 / 255.0);
     glutSolidCube(4.0);	//머리 크기
 
@@ -353,7 +360,7 @@ void Hero() {	//주인공 그리기
     glPopMatrix();
 
     glPopMatrix();
-    glTranslatef(0.0, -48.5, 0.0);
+    glTranslatef(0.0, -52.5, 0.0);
     glPushMatrix();//몸통
     glTranslatef(-10.0, 0.0, -0.1);
     glScalef(1.4, 2.0, 1.0);
@@ -386,7 +393,7 @@ void Hero() {	//주인공 그리기
     glutWireCube(1.5);
     glPopMatrix();
 
-    glTranslatef(0.0, -2.0, 0.0);
+    glTranslatef(0.0, -1.0, 0.0);
     glPushMatrix();	//왼쪽다리
     if (OnRide == 0) glRotatef(-(HeroMotion / 2.0), 1.0, 0.0, 0.0);
     else {
@@ -445,23 +452,24 @@ void MakeTicketBox() {
 
 void TicketOffice() {
     glPushMatrix();	//롤러코스터 매표소
-    glTranslatef(150.0, 0.0, 230.0);
+    glTranslatef(RTOfficeX, 0.0, RTOfficeZ);
     MakeTicketBox();
     glPopMatrix();
 
     glPushMatrix();	//바이킹 매표소
-    glTranslatef(200.0, 0.0, -20.0);
+    glTranslatef(BTOfficeX, 0.0, BTOfficeZ);
     MakeTicketBox();
     glPopMatrix();
 
     glPushMatrix();	//관람차 매표소
-    glTranslatef(-250.0, 0.0, -280.0);
+    glTranslatef(GTOfficeX, 0.0, GTOfficeZ);
     MakeTicketBox();
     glPopMatrix();
 }
 
 void ChangeRide() {
-    if (HeroMoveX <= 270.0 && HeroMoveX >= 200.0) {	//바이킹 태우기
+    if (heroLocationX <= BTOfficeX + 100 && heroLocationX >= BTOfficeX - 100
+        && heroLocationZ <= BTOfficeZ + 100 && heroLocationZ >= BTOfficeZ - 100) {	//바이킹 태우기
         if (OnRide == 2) {
             OnRide = 0;
         }
@@ -469,7 +477,8 @@ void ChangeRide() {
             OnRide = 2;
         }
     }
-    if (HeroMoveX <= 520.0 && HeroMoveX >= 450.0) {	//관람차 태우기
+    else if (heroLocationX <= GTOfficeX + 100 && heroLocationX >= GTOfficeX - 100
+        && heroLocationZ <= GTOfficeZ + 100 && heroLocationZ >= GTOfficeZ - 100) {	//관람차 태우기
         if (OnRide == 1) {
             OnRide = 0;
         }
@@ -477,7 +486,8 @@ void ChangeRide() {
             OnRide = 1;
         }
     }
-    if (HeroMoveX <= 420.0 && HeroMoveX >= 350.0) {	//롤러코스터 태우기
+    else if (heroLocationX <= RTOfficeX + 100 && heroLocationX >= RTOfficeX - 100
+        && heroLocationZ <= RTOfficeZ + 100 && heroLocationZ >= RTOfficeZ - 100) {	//롤러코스터 태우기
         if (OnRide == 3) {
             OnRide = 0;
         }
@@ -485,6 +495,7 @@ void ChangeRide() {
             OnRide = 3;
         }
     }
+    else OnRide = 0;
 
 }
 
@@ -1529,21 +1540,22 @@ void place_camera(int action)
         heroLocationY = -movcord[1] * 2 - 40;
     }
     if (camw == 0) {
-        x_r = 180;
-        HeroRot = -90.0;
         OnRide = 0;
 
-        movcord[0] = -500;
+        x_r = 180;
+        HeroRot = 90.0;
+
+        //movcord[0] = -500;
         movcord[1] = -10;
-        movcord[2] = 200;
-        HeroMoveX = -10;
+        //movcord[2] = 200;
+        //HeroMoveX = -10;
 
         heroLocationX = -movcord[0];
         heroLocationY = 50.0;
         heroLocationZ = -movcord[2];
 
-        viewer[0] = 1.0;
-        viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
+        //viewer[0] = 1.0;
+        //viewer[1] = viewer[2] = camera[0] = camera[1] = camera[2] = x_r = 0.0; //시점 변경
 
         if (state == 1) {
             view = 1;
